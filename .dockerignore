@@ -1,0 +1,14 @@
+
+# Docker
+**/.dockerignore
+**/*Dockerfile
+
+# Jenkins
+**/Jenkinsfile
+
+# test code
+tests/
+
+# Git
+**/.gitignore
+**/.git/*s

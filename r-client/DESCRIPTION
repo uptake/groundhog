@@ -1,0 +1,28 @@
+Package: groundhog
+Type: Package
+Title: R Client for "groundhog" (Elevation API)
+Version: 0.0.1
+Authors@R: c(
+    person("James", "Lamb", email = "jaylamb20@gmail.com", role = c("aut", "cre")),
+    person("Brad", "Beechler", email = "brad.beechler@uptake.com", role = c("aut")))
+Maintainer: James Lamb <james.lamb@uptake.com>
+Description: "groundhog" is a service which provides access to
+             SRTM elevation data. This package is a complement for that service.
+             Given a data.table with GPS information, this package provides utilities
+             to enrich that dataset with elevation and slope features.
+Depends:
+    R (>= 3.3.0)
+Imports:
+    assertthat,
+    data.table,
+    futile.logger,
+    httr,
+    jsonlite,
+    uuid
+Suggests:
+    knitr,
+    testthat
+License: file LICENSE
+LazyData: TRUE
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1
