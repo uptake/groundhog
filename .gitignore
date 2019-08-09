@@ -1,0 +1,21 @@
+# Misc files
+.Rhistory
+*.Rproj
+**/.DS_Store
+
+# data files
+**/*.rds
+**/*.rda
+**/*.csv
+
+# build artifacts
+**/*.tar.gz
+.Rproj.user
+
+# Compiled vignette
+inst/doc/*
+Meta/*
+doc/*
+
+# aspell stuff
+**/*.bak
