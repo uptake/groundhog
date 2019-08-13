@@ -13,7 +13,7 @@ Our motto:
 
 We'll put the container up on Dockerhub soon. For now, you can build locally from this repo.
 
-```
+```bash
 docker build -t groundhog -f Dockerfile .
 ```
 
@@ -21,19 +21,19 @@ docker build -t groundhog -f Dockerfile .
 
 Run this command to kick up a local version of the app
 
-```
+```bash
 docker run -p 5005:5005 --name groundhog_server groundhog
 ```
 
 You can now hit the API on `localhost`. Run the following command in a separate terminal to see the help docs.
 
-```
+```bash
 curl http://localhost:5005
 ```
 
 To stop the container by name (if you used the `--name` tag when launching it), do the following:
 
-```
+```bash
 docker stop groundhog_server
 ```
 
@@ -43,13 +43,13 @@ We provide an R client for the service. Given a `data.table` with GPS informatio
 
 You can install the package from source
 
-```
+```bash
 R CMD INSTALL r-client/
 ```
 
 To test it out, spin up a local version of the service, then run this example:
 
-```
+```r
 library(data.table)
 
 someDT <- data.table::data.table(
@@ -70,7 +70,7 @@ We provide a Python client for the service. Given a `pandas` `DataFrame` with GP
 
 You can install the package from source
 
-```
+```bash
 pushd py-client
     pip install .
 popd
@@ -78,7 +78,7 @@ popd
 
 To test it out, spin up a local version of the service, then run this example:
 
-```
+```python
 import pandas as pd
 import numpy as np
 import groundhog as gh
