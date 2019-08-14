@@ -11,10 +11,12 @@ Our motto:
 
 ### Building the container
 
-We'll put the container up on Dockerhub soon. For now, you can build locally from this repo.
+We'll put the container up on Dockerhub soon ([status](https://github.com/uptake/groundhog/issues/24)). For now, you can build locally from this repo.
 
 ```bash
-docker build -t groundhog -f Dockerfile .
+git clone https://github.com/uptake/groundhog.git
+cd groundhog
+docker build -t groundhog -f Dockerfile-app .
 ```
 
 ### Running the app
