@@ -1,17 +1,17 @@
 
-context("\n>> AppendSlopeFeatures")
+context("\n>> append_slope_features")
 
 # Configure logger (suppress all logs in testing)
 loggerOptions <- futile.logger::logger.options()
 if (!identical(loggerOptions, list())){
-    origLogThreshold <- loggerOptions[[1]][['threshold']]    
+    origLogThreshold <- loggerOptions[[1]][['threshold']]
 } else {
     origLogThreshold <- futile.logger::INFO
 }
 futile.logger::flog.threshold(0)
 
-test_that("AppendSlopeFeatures should work", {
-    
+test_that("append_slope_features should work", {
+
     # Make a test dataset
     someDT <- data.table::data.table(
         longitude = runif(10, -110, -109)
@@ -21,12 +21,12 @@ test_that("AppendSlopeFeatures should work", {
                                 , length.out = 10)
         , assetId = c(rep("ABC", 5), rep("DEF", 5))
     )
-    
+
     # Append features
-    groundhog::AppendSlopeFeatures(someDT
+    groundhog::append_slope_features(someDT
                                    , hostName = "localhost"
                                    , port = 5005)
-    
+
     expect_true(data.table::is.data.table(someDT))
     expect_true(nrow(someDT) == 10)
     expect_named(someDT

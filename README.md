@@ -61,7 +61,7 @@ someDT <- data.table::data.table(
     , assetId = c(rep("ABC", 5), rep("DEF", 5))
 )
 
-groundhog::AppendSlopeFeatures(someDT, hostName = "localhost", port = 5005)
+groundhog::append_slope_features(someDT, hostName = "localhost", port = 5005)
 ```
 
 ### Python client

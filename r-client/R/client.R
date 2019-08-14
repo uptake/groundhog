@@ -1,6 +1,5 @@
-
 #' @title Slope and Elevation Features
-#' @name AppendSlopeFeatures
+#' @name append_slope_features
 #' @description This function takes a \code{\link{data.table}} with GPS coordinates
 #'              and enriches it with some elevation and slope features. The function
 #'              hits the public Shuttle Radar Topography Mission (SRTM) dataset
@@ -16,9 +15,9 @@
 #'                          in degrees. If not supplied, this will be calculated
 #'                          from consecutive observations}
 #' }
-#' @param hostName A string with the host running groundhog. By default, this 
+#' @param hostName A string with the host running groundhog. By default, this
 #'                 function expects that you're running the app on \code{localhost}.
-#' @param port Port that the service is running on. 5005 by default. You PROBABLY 
+#' @param port Port that the service is running on. 5005 by default. You PROBABLY
 #'             won't ever have to change this.
 #' @importFrom assertthat assert_that has_name
 #' @importFrom data.table := as.data.table key rbindlist setnames setorderv
@@ -29,7 +28,7 @@
 #' @examples
 #' \dontrun{
 #' library(data.table)
-#' 
+#'
 #' # Create a sample dataset
 #' someDT <- data.table::data.table(
 #'      longitude = runif(10, -110, -109)
@@ -39,41 +38,41 @@
 #'                              , length.out = 10)
 #'      , assetId = c(rep("ABC", 5), rep("DEF", 5))
 #' )
-#' 
+#'
 #' # Append slope fearures
-#' groundhog::AppendSlopeFeatures(someDT, hostName = "localhost", port = 5005)
+#' groundhog::append_slope_features(someDT, hostName = "localhost", port = 5005)
 #' }
-AppendSlopeFeatures <- function(DT
+append_slope_features <- function(DT
                                 , hostName = "localhost"
                                 , port = 5005
                                 ){
-    
+
     assertthat::assert_that(
         all(c("dateTime", "assetId", "latitude", "longitude") %in% names(DT))
     )
-    
+
     # Build a join table on the original DT. We'll ship this "unique_key"
     # with the request and use it to join client-side. Otherwise, joining on
     # lat-lon can fail because of different precision levels
     #
     # Sorting these so we know the results can be appended to DT in place
     joinKeys <- sort(sapply(1:nrow(DT), uuid::UUIDgenerate))
-    
+
     if ("bearing" %in% names(DT)){
         tempDT <- DT[, .(assetId, dateTime, latitude, longitude, bearing, unique_key = joinKeys)]
     } else {
         tempDT <- DT[, .(assetId, dateTime, latitude, longitude, unique_key = joinKeys)]
     }
-    
+
     # Grab a JSON payload for each asset in DT
     assets <- tempDT[, unique(assetId)]
     log_info(sprintf("Running groundhog for %s assets", length(assets)))
-    
+
     # Submit one request per asset
     payloads <- lapply(assets
                        , FUN = function(asset, DT){.GetPayloadJSON(tempDT[assetId == asset])}
                        , DT = tempDT)
-    
+
     # Submit requests
     assetNumber <- 1
     numAssets <- length(assets)
@@ -89,17 +88,17 @@ AppendSlopeFeatures <- function(DT
                               }
                            , hostName = hostName
                            , port = port)
-    
+
     # Parse into one data.table
     resultDT <- data.table::rbindlist(
         responseList
         , fill = TRUE
     )
-    
+
     data.table::setnames(resultDT, old = c("geo_point.lat", "geo_point.lon")
                          , new = c("latitude", "longitude"))
-    
-    # Instead of copying the whole DT (which could be yuge), we can do a join on 
+
+    # Instead of copying the whole DT (which could be yuge), we can do a join on
     # the relevant fields then do in-place assignments....check this out
     joinDT <- merge(
         x = tempDT
@@ -109,12 +108,12 @@ AppendSlopeFeatures <- function(DT
         , sort = FALSE
     )
     data.table::setorderv(joinDT, "unique_key")
-    
+
     # Hopefully nothing broke
     assertthat::assert_that(nrow(DT) == nrow(joinDT)
                             , is.null(data.table::key(joinDT))
                             , identical(joinDT[, unique_key], tempDT[, unique_key]))
-    
+
     # Add any cols that we got from the API
     # NOTE: ignoring unique_key and stride
     newCols <- base::setdiff(names(resultDT), c(names(DT), "unique_key", "stride"))
@@ -123,7 +122,7 @@ AppendSlopeFeatures <- function(DT
         log_info(sprintf("Appending %s", newCol))
         DT[, (newCol) := `__values__`]
     }
-    
+
     log_info("Done appending elevation features")
     return(invisible(NULL))
 }
@@ -138,14 +137,14 @@ AppendSlopeFeatures <- function(DT
 #' @importFrom httr add_headers content RETRY stop_for_status
 #' @importFrom jsonlite fromJSON
 .GroundhogQuery <- function(hostName, port, payloadJSON){
-    
+
     response <- httr::RETRY(verb = "POST"
                             , paste0("http://", hostName, ":", port, "/groundhog")
                             , body = payloadJSON
                             , httr::add_headers("Content-Type" = "application/json")
                             , times = 5)
     httr::stop_for_status(response)
-    
+
     responseDT <- data.table::as.data.table(
         jsonlite::fromJSON(
             # Suppress that annoying message about encodings from httr::content
@@ -168,7 +167,7 @@ AppendSlopeFeatures <- function(DT
 #' @importFrom data.table setorderv
 #' @importFrom jsonlite toJSON
 .GetPayloadJSON <- function(DT){
-    
+
     # TODO: fix this if statement it's gross
     if ("bearing" %in% names(DT)){
         uniqueDT <- unique(
@@ -183,11 +182,11 @@ AppendSlopeFeatures <- function(DT
             , by = c('latitude', 'longitude')
         )
     }
-    
+
     # Order the table in ascending order by date to be sure
     # bearing calcs work correctly
     data.table::setorderv(uniqueDT, c("dateTime"))
     uniqueDT[, dateTime := NULL]
-    
+
     return(jsonlite::toJSON(uniqueDT))
 }
