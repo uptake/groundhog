@@ -1,5 +1,5 @@
 
-from uplog import log
+import logging
 import sys
 import time
 import psutil
@@ -9,6 +9,8 @@ from copy import deepcopy
 import multiprocessing as mp
 from flask import Flask, request, Response, jsonify
 import srtm_elevation_and_slope as srtm_methods
+
+logger = logging.getLogger()
 
 
 # Flask object for resident support
@@ -38,12 +40,12 @@ class Heading:
         self.unique_key = unique_key
 
     def info(self):
-        log.out.info("lat|lon at bearing:stride (key) = " +
-                     str(self.latitude) + "|" +
-                     str(self.longitude) + " at " +
-                     str(self.bearing) + ":" +
-                     str(self.stride) + " (" +
-                     str(self.unique_key) + ")")
+        logger.info("lat|lon at bearing:stride (key) = " +
+                    str(self.latitude) + "|" +
+                    str(self.longitude) + " at " +
+                    str(self.bearing) + ":" +
+                    str(self.stride) + " (" +
+                    str(self.unique_key) + ")")
 
     def to_dict(self):
         return {
@@ -59,11 +61,11 @@ def report_sys_info():
     """
     Report basic system stats
     """
-    log.out.info("Python version  : " + sys.version)
-    log.out.info("Number of CPUs  : " + str(psutil.cpu_count()))
-    log.out.info("Memory total    : " + str(round(float(psutil.virtual_memory().total) / 2 ** 30, 2)) + "GB")
-    log.out.info("Memory useage   : " + str(round(float(psutil.virtual_memory().used) / 2 ** 30, 2)) + "GB")
-    log.out.info("Memory available: " + str(round(float(psutil.virtual_memory().available) / 2 ** 30, 2)) + "GB")
+    logger.info("Python version  : " + sys.version)
+    logger.info("Number of CPUs  : " + str(psutil.cpu_count()))
+    logger.info("Memory total    : " + str(round(float(psutil.virtual_memory().total) / 2 ** 30, 2)) + "GB")
+    logger.info("Memory useage   : " + str(round(float(psutil.virtual_memory().used) / 2 ** 30, 2)) + "GB")
+    logger.info("Memory available: " + str(round(float(psutil.virtual_memory().available) / 2 ** 30, 2)) + "GB")
 
 
 def get_command_line():
@@ -94,13 +96,13 @@ def help_response():
     """
     help_message = """
         <xmp>
-           ___                           _ _                 
-          / _ \_ __ ___  _   _ _ __   __| | |__   ___   __ _ 
+           ___                           _ _
+          / _ \_ __ ___  _   _ _ __   __| | |__   ___   __ _
          / /_\/ '__/ _ \| | | | '_ \ / _` | '_ \ / _ \ / _` |
         / /_\\\\| | | (_) | |_| | | | | (_| | | | | (_) | (_| |
         \____/|_|  \___/ \__,_|_| |_|\__,_|_| |_|\___/ \__, |
-                                                       |___/ 
-        
+                                                       |___/
+
         ENDPOINTS:
         /help - to request a help doc
         /health - make health check
@@ -110,16 +112,16 @@ def help_response():
         lat - latitude of interest (-90.0 to 90.0 degrees North)
         lon - longitude of interest (-180.0 to 180.0 degrees East)
         bearing - Compass bearing for slope (cardinal degrees, 0 is North)
-        
+
         or:
         coords - a list of coordinates (NOT IMPLEMENTED YET)
-        
+
         optional:
         stride (optional, default=250.0) - resolution to calculate slope on in meters (larger is smoother)
-        
+
         SAMPLE REST CALL:
         http://localhost:5005/groundhog?lat=45.2&lon=-101.3
-        
+
         SAMPLE JSON PAYLOAD (OPTIONAL - bearing, stride, unique_key):
         [{
             'latitude': 45.0,
@@ -178,13 +180,13 @@ def json_to_headings(json_coords):
             longitude = geo_point.get("lon")
             # Give up if no coord info found
             if (latitude is None) or (longitude is None):
-                log.out.error("Problem in latitude/longitude info in JSON.")
+                logger.error("Problem in latitude/longitude info in JSON.")
                 raise KeyError
         try:
             latitude = float(latitude)
             longitude = float(longitude)
         except ValueError:
-            log.out.error("Problem in parsing latitude/longitude given as float.")
+            logger.error("Problem in parsing latitude/longitude given as float.")
             raise ValueError
         if coord.get("bearing") is not None:
             bearing = float(coord.get("bearing"))
@@ -219,7 +221,7 @@ def rest_to_heading(params):
         if key == 'stride':
             stride = float(value)
     if (latitude is None) or (longitude is None):
-        log.out.error("Required latitude, longitude not given.")
+        logger.error("Required latitude, longitude not given.")
         return None
     return [Heading(latitude, longitude, bearing=bearing, stride=stride)]
 
@@ -261,22 +263,22 @@ def groundhog_request(request):
     Supports the request for a groundhog call
     params (obj) - a dictionary filled with option from REST request
     """
-    log.out.info("Groundhog has been summoned.")
+    logger.info("Groundhog has been summoned.")
     params = request.args
     # Get a list of coordinates from the REST call
     if request.method == 'POST':
         try:
             json_payload = request.get_json()
         except TypeError:
-            log.out.error("Problem in POST request.")
+            logger.error("Problem in POST request.")
             return None
-        log.out.info("Coordinates posted as JSON...")
+        logger.info("Coordinates posted as JSON...")
         headings = json_to_headings(json_payload)
     else:
         headings = rest_to_heading(params)
 
     # Curate coordinates from the REST call
-    log.out.info("Received " + str(len(headings)) + " coordinates to fetch.")
+    logger.info("Received " + str(len(headings)) + " coordinates to fetch.")
 
     # If it's a single heading assume you got a bearing, throw an error if not
     response_list = []
@@ -286,8 +288,8 @@ def groundhog_request(request):
         response_part["elevation"] = elevation
         response_part["slope"] = slope
         response_list.append(response_part)
-        # log.out.info("elevation: {}".format(elevation))
-        # log.out.info("slope {}".format(slope))
+        # logger.info("elevation: {}".format(elevation))
+        # logger.info("slope {}".format(slope))
     # If it's a list can use one of two methods, prefer given bearings
     else:
         elevation_list, slope_list, bearing_list = from_heading_list(headings)
@@ -305,27 +307,27 @@ def groundhog_request(request):
 # Standard health check
 @flask_app.route("/health")
 def health_check():
-    log.out.info("Received /health request from: " + request.remote_addr)
+    logger.info("Received /health request from: " + request.remote_addr)
     return make_health_check()
 
 
 # Give help
 @flask_app.route("/")
 def do_none_help():
-    log.out.info("Received / request from: " + request.remote_addr)
+    logger.info("Received / request from: " + request.remote_addr)
     return help_response()
 
 
 @flask_app.route("/help")
 def do_help_message():
-    log.out.info("Received /help request from: " + request.remote_addr)
+    logger.info("Received /help request from: " + request.remote_addr)
     return help_response()
 
 
 # Main endpoint
 @flask_app.route("/groundhog", methods=['GET', 'POST'])
 def groundhog():
-    log.out.info("Received /groundhog request from: " + request.remote_addr)
+    logger.info("Received /groundhog request from: " + request.remote_addr)
     data_list = groundhog_request(request)
     return make_json_response(data_list)
 
@@ -336,9 +338,9 @@ if __name__ == "__main__":
 
     args = get_command_line()  # Read command line arguments
     if args.debug:
-        log.out.setLevel("DEBUG")  # Set the logging level to verbose
+        logger.setLevel("DEBUG")  # Set the logging level to verbose
     else:
-        log.out.setLevel("INFO")  # Set the logging level to normal
+        logger.setLevel("INFO")  # Set the logging level to normal
 
     pool = mp.Pool()  # Instantiate a pool object
     flask_app.config["pool"] = mp.pool.Pool()
@@ -346,9 +348,8 @@ if __name__ == "__main__":
     flask_app.run(host="0.0.0.0", port=args.port, debug=args.debug, use_reloader=False)
 
     # Shut down and clean up
-    log.out.info("Execution time: " + str(round((time.clock() - start) * 1000, 1)) + " ms")
-    log.out.info("All Done!")
-    log.stopLog()
+    logger.info("Execution time: " + str(round((time.clock() - start) * 1000, 1)) + " ms")
+    logger.info("All Done!")
     try:
         mp.sys.exit()
     except SystemError:

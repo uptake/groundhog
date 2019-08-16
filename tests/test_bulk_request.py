@@ -2,11 +2,13 @@
 This tests a bulk JSON request
 """
 
-from uplog import log  # Make the logs global
+import logging
 import requests
 
 INTERP_URL = 'http://localhost:5005/groundhog'
 DEFAULT_STRIDE = 250.0
+
+logger = logging.getLogger()  # Make the logs global
 
 
 def request_with_json(json_payload):
@@ -52,28 +54,28 @@ def make_test_json(size=10, stride=DEFAULT_STRIDE, use_bearing=True, use_geo_poi
 
 
 if __name__ == '__main__':
-    log.out.setLevel('INFO')  # Set the logging level to verbose
-    log.out.info("Testing groundhog JSON post")
+    logger.setLevel('INFO')  # Set the logging level to verbose
+    logger.info("Testing groundhog JSON post")
 
     test_json = make_test_json(size=25)
-    log.out.info("Test payload (with bearings given):")
-    log.out.info(test_json)
+    logger.info("Test payload (with bearings given):")
+    logger.info(test_json)
     test_response = request_with_json(test_json)
-    log.out.info("Test response (with bearings given):")
-    log.out.info(test_response)
+    logger.info("Test response (with bearings given):")
+    logger.info(test_response)
 
     test_json = make_test_json(size=25, use_bearing=False)
-    log.out.info("Test payload (without bearings given):")
-    log.out.info(test_json)
+    logger.info("Test payload (without bearings given):")
+    logger.info(test_json)
     test_response = request_with_json(test_json)
-    log.out.info("Test response (without bearings given):")
-    log.out.info(test_response)
+    logger.info("Test response (without bearings given):")
+    logger.info(test_response)
 
     test_json = make_test_json(size=25, use_geo_point=True)
-    log.out.info("Test payload (with geo_points given):")
-    log.out.info(test_json)
+    logger.info("Test payload (with geo_points given):")
+    logger.info(test_json)
     test_response = request_with_json(test_json)
-    log.out.info("Test response (with geo_points given):")
-    log.out.info(test_response)
+    logger.info("Test response (with geo_points given):")
+    logger.info(test_response)
 
-    log.out.info("Done!")
+    logger.info("Done!")

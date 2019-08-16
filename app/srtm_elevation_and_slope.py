@@ -6,7 +6,7 @@ and the slope associated with a moving asset
 Modified: 20171120 (Brad Beechler)
 """
 
-from uplog import log  # make the logs global
+import logging
 import time
 import argparse
 from math import asin, sin, cos, pi, sqrt, atan2, degrees, radians
@@ -14,6 +14,8 @@ from numpy import power
 import srtm  # weird pip install: `pip install srtm.py`
 
 srtm_client = srtm.get_data()  # if OOM issues, set to True
+
+logger = logging.getLogger()  # make the logs global
 
 
 def get_command_line():
@@ -199,11 +201,11 @@ def slope_from_coord_bearing(longitude_origin, latitude_origin, bearing_origin, 
     :return: terrain elevation (meters) / meter, terrain slope (meters/meter)
     """
     elevation_origin = srtm_client.get_elevation(latitude_origin, longitude_origin)
-    log.out.debug("Elevation at origin: " + str(elevation_origin))
+    logger.debug("Elevation at origin: " + str(elevation_origin))
 
     # Bearing is an optional param
     if bearing_origin is None:
-        log.out.warn("No bearing given. Returning only elevation")
+        logger.warn("No bearing given. Returning only elevation")
         return elevation_origin, None
 
     longitude_ahead, latitude_ahead = lon_lat_from_distance_bearing(longitude_origin, latitude_origin,
@@ -212,9 +214,9 @@ def slope_from_coord_bearing(longitude_origin, latitude_origin, bearing_origin, 
                                                                       (-1.0 * stride_length), bearing_origin)
 
     elevation_ahead = get_elevation_safe(longitude_ahead, latitude_ahead)
-    log.out.debug("Elevation at coordinate ahead: " + str(elevation_ahead))
+    logger.debug("Elevation at coordinate ahead: " + str(elevation_ahead))
     elevation_behind = get_elevation_safe(longitude_behind, latitude_behind)
-    log.out.debug("Elevation at coordinate behind: " + str(elevation_behind))
+    logger.debug("Elevation at coordinate behind: " + str(elevation_behind))
 
     if ((elevation_origin is None) or
        (elevation_ahead is None) or
@@ -223,9 +225,9 @@ def slope_from_coord_bearing(longitude_origin, latitude_origin, bearing_origin, 
     else:
         # Calculate terrain slope
         delta_elevation = elevation_ahead - elevation_behind
-        log.out.debug("Change in elevation = " + str(delta_elevation))
+        logger.debug("Change in elevation = " + str(delta_elevation))
         terrain_slope = delta_elevation / stride_length
-        log.out.debug("Terrain slope = " + str(terrain_slope) + " m/m")
+        logger.debug("Terrain slope = " + str(terrain_slope) + " m/m")
         return elevation_origin, terrain_slope
 
 
@@ -267,10 +269,10 @@ def should_be_a_test(args):
     # Check stride setting and report if using default
     if args.stride is not None:
         stride_length = float(args.stride)
-        
+
     test_elev_bearing, test_slope_bearing = slope_from_coord_bearing(longitude_origin, latitude_origin, bearing_origin,
                                                                      stride_length=stride_length)
-    log.out.info("Terrain slope = " + str(test_slope_bearing) + " m/m")
+    logger.info("Terrain slope = " + str(test_slope_bearing) + " m/m")
 
     # TEST
     test_coords = [(-78.3, 38.32), (-78.5, 38.32), (-78.7, 38.32), (-78.8, 38.32), (-79.0, 38.32),
@@ -289,14 +291,13 @@ if __name__ == '__main__':
     start = time.clock()
     args = get_command_line()  # Read command line arguments
     if args.debug:
-        log.out.setLevel("DEBUG")  # Set the logging level to verbose
+        logger.setLevel("DEBUG")  # Set the logging level to verbose
     else:
-        log.out.setLevel("INFO")  # Set the logging level to normal
+        logger.setLevel("INFO")  # Set the logging level to normal
 
-    log.out.warning("You should really be running the groundhog.py service, this is going into tests.")
+    logger.warning("You should really be running the groundhog.py service, this is going into tests.")
     should_be_a_test(args)
 
     # Shut down and clean up
-    log.out.info("Execution time: " + str(round((time.clock() - start) * 1000, 1)) + " ms")
-    log.out.info("All Done!")
-    log.stopLog()
+    logger.info("Execution time: " + str(round((time.clock() - start) * 1000, 1)) + " ms")
+    logger.info("All Done!")
