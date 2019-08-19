@@ -1,21 +1,21 @@
-
 # groundhog
+`groundhog` is a service and client libraries to access NASA's publicly available surface elevation data, [SRTM](https://www2.jpl.nasa.gov/srtm/).  Given a table with GPS information, this package provides utilities to enrich that dataset with elevation and slope features.  Just load the container and one of the clients, and you're all set! 
 
-Our mission:
+***
+## Getting Started
 
-> Things go up. And down. We might be able to make money by telling people when that happened.
+Clone this repository. 
 
-Our motto:
-
-> If you ain't first, you're last.
+```bash
+git clone https://github.com/uptake/groundhog.git
+cd groundhog
+```
 
 ### Building the container
 
 We'll put the container up on Dockerhub soon ([status](https://github.com/uptake/groundhog/issues/24)). For now, you can build locally from this repo.
 
 ```bash
-git clone https://github.com/uptake/groundhog.git
-cd groundhog
 docker build -t groundhog -f Dockerfile-app .
 ```
 
@@ -38,6 +38,10 @@ To stop the container by name (if you used the `--name` tag when launching it), 
 ```bash
 docker stop groundhog_server
 ```
+
+***
+## Clients
+With the docker container running, choose a client to get and append elevation data to your dataset. 
 
 ### R client
 
