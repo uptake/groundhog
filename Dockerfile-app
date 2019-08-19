@@ -1,5 +1,9 @@
 FROM alpine:3.7
-MAINTAINER James Lamb <jaylamb20@gmail.com>
+LABEL maintainer="jaylamb20@gmail.com"
+LABEL author1="brad.beechler@uptake.com"
+LABEL author2="jaylamb20@gmail.com"
+LABEL website="https://github.com/uptake/groundhog"
+LABEL description="groundhog is a service which provides access to SRTM elevation data."
 
 ####################
 # SETUP            #
