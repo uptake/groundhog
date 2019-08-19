@@ -1,4 +1,5 @@
 # groundhog
+
 `groundhog` is a service and client libraries to access NASA's publicly available surface elevation data, [SRTM](https://www2.jpl.nasa.gov/srtm/).  Given a table with GPS information, this package provides utilities to enrich that dataset with elevation and slope features.  Just load the container and one of the clients, and you're all set! 
 
 ***
@@ -41,7 +42,8 @@ docker stop groundhog_server
 
 ***
 ## Clients
-With the docker container running, choose a client to get and append elevation data to your dataset. 
+
+Given a running instance of the service, choose a client to get and append elevation data to your dataset. 
 
 ### R client
 
