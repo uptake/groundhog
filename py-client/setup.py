@@ -13,8 +13,7 @@ VERSION = ".".join([CURRENT_VERSION, date_tmpl.format(dt=datetime.datetime.now()
 # Packages used
 regular_packages = [
     'pandas',
-    'requests',
-    'uuid'
+    'requests'
 ]
 
 # This is where the magic happens

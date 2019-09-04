@@ -1,5 +1,7 @@
 # groundhog
 
+[![Travis Build Status](https://img.shields.io/travis/uptake/groundhog.svg?label=travis&logo=travis&branch=master)](https://travis-ci.org/uptake/groundhog)
+
 `groundhog` is a service and client libraries to access NASA's publicly available surface elevation data, [SRTM](https://www2.jpl.nasa.gov/srtm/).  Given a table with GPS information, this package provides utilities to enrich that dataset with elevation and slope features.  Just load the container and one of the clients, and you're all set! 
 
 ***

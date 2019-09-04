@@ -1,0 +1,18 @@
+
+language: python
+python: 3.6
+os: linux
+git:
+  depth: 1
+
+env:
+  - CONDA_DIR=/home/travis/miniconda3
+
+before_install:
+  - .ci/setup.sh
+
+install:
+  - .ci/install.sh
+
+script:
+  - .ci/test.sh
