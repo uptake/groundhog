@@ -35,13 +35,13 @@ RUN pip install --upgrade pip && \
 ####################
 
 RUN curl -L "https://github.com/andyshinn/alpine-pkg-glibc/releases/download/2.23-r1/glibc-2.23-r1.apk" -o /tmp/glibc.apk \
-   && curl -L "https://github.com/andyshinn/alpine-pkg-glibc/releases/download/2.23-r1/glibc-bin-2.23-r1.apk" -o /tmp/glibc-bin.apk \
-   && curl -L "https://github.com/andyshinn/alpine-pkg-glibc/releases/download/2.23-r1/glibc-i18n-2.23-r1.apk" -o /tmp/glibc-i18n.apk
+    && curl -L "https://github.com/andyshinn/alpine-pkg-glibc/releases/download/2.23-r1/glibc-bin-2.23-r1.apk" -o /tmp/glibc-bin.apk \
+    && curl -L "https://github.com/andyshinn/alpine-pkg-glibc/releases/download/2.23-r1/glibc-i18n-2.23-r1.apk" -o /tmp/glibc-i18n.apk
 
 RUN apk add --allow-untrusted /tmp/glibc*.apk \
-   && /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib \
-   && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 \
-   && rm -rf /tmp/glibc*apk /var/cache/apk/*
+    && /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib \
+    && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 \
+    && rm -rf /tmp/glibc*apk /var/cache/apk/*
 
 # From: https://github.com/frol/docker-alpine-miniconda3/blob/master/Dockerfile
 ENV CONDA_DIR="/opt/conda"

@@ -3,8 +3,8 @@
 # failure is a natural part of life
 set -e
 
-PY_DIR=$(pwd)/py-client
-R_DIR=$(pwd)/r-client
+PY_DIR=$(pwd)/clients/py-client
+R_DIR=$(pwd)/clients/r-client
 
 pushd ${PY_DIR}
     python setup.py install

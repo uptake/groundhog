@@ -2,12 +2,12 @@
 
 [![Travis Build Status](https://img.shields.io/travis/uptake/groundhog.svg?label=travis&logo=travis&branch=master)](https://travis-ci.org/uptake/groundhog)
 
-`groundhog` is a service and client libraries to access NASA's publicly available surface elevation data, [SRTM](https://www2.jpl.nasa.gov/srtm/).  Given a table with GPS information, this package provides utilities to enrich that dataset with elevation and slope features.  Just load the container and one of the clients, and you're all set! 
+`groundhog` is a service and client libraries to access NASA's publicly available surface elevation data, [SRTM](https://www2.jpl.nasa.gov/srtm/).  Given a table with GPS information, this package provides utilities to enrich that dataset with elevation and slope features.  Just load the container and one of the clients, and you're all set!
 
 ***
 ## Getting Started
 
-Clone this repository. 
+Clone this repository.
 
 ```bash
 git clone https://github.com/uptake/groundhog.git
@@ -19,7 +19,7 @@ cd groundhog
 We'll put the container up on Dockerhub soon ([status](https://github.com/uptake/groundhog/issues/24)). For now, you can build locally from this repo.
 
 ```bash
-docker build -t groundhog -f Dockerfile-app .
+docker build -t groundhog -f Dockerfile .
 ```
 
 ### Running the app
@@ -45,7 +45,7 @@ docker stop groundhog_server
 ***
 ## Clients
 
-Given a running instance of the service, choose a client to get and append elevation data to your dataset. 
+Given a running instance of the service, choose a client to get and append elevation data to your dataset.
 
 ### R client
 
@@ -54,7 +54,7 @@ We provide an R client for the service. Given a `data.table` with GPS informatio
 You can install the package from source
 
 ```bash
-R CMD INSTALL r-client/
+R CMD INSTALL clients/r-client/
 ```
 
 To test it out, spin up a local version of the service, then run this example:
@@ -81,7 +81,7 @@ We provide a Python client for the service. Given a `pandas` `DataFrame` with GP
 You can install the package from source
 
 ```bash
-pushd py-client
+pushd clients/py-client
     pip install .
 popd
 ```
