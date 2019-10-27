@@ -2,6 +2,8 @@
 .Rhistory
 *.Rproj
 **/.DS_Store
+*.iml
+*.idea
 
 # data files
 **/*.rds

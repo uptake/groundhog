@@ -7,7 +7,7 @@ import argparse
 import json
 from copy import deepcopy
 import multiprocessing as mp
-from flask import Flask, request, Response, jsonify
+from flask import Flask, request, Response
 import srtm_elevation_and_slope as srtm_methods
 
 logger = logging.getLogger()
